@@ -1,100 +1,116 @@
-class Department {
-  protected employees: string[] = [];
+type Admin = {
+  name: string;
+  privileges: string[];
+};
 
-  // 객체가 생성될 때 실행
-  constructor(private readonly id: string, public name: string) {}
+type Employee = {
+  name: string;
+  startDate: Date;
+};
 
-  describe(this: Department) {
-    console.log(`Department : (${this.id})${this.name}`);
+type ElevatedEmployee = Admin & Employee;
+
+const e1: ElevatedEmployee = {
+  name: "Max",
+  privileges: ["create-server"],
+  startDate: new Date(),
+};
+
+type Combinable = string | number;
+type Numeric = number | boolean;
+
+type Universal = Combinable & Numeric;
+
+function adds(a: Combinable, b: Combinable) {
+  if (typeof a === "string" || typeof b === "string") {
+    return a.toString() + b.toString();
   }
+  return a + b;
+}
 
-  addEmployee(employee: string) {
-    this.employees.push(employee);
+type UnknwonEmployee = Employee | Admin;
+
+function printEmployeeInformation(emp: UnknwonEmployee) {
+  console.log("Name: " + emp.name);
+  //  아래코드 오류 발생 -> name속성은 UnknwonEmployee에 둘 다 있지만 privileges는 모름
+  // console.log('Privileges: ' +emp.privileges);
+  if ("privileges" in emp) {
+    console.log("Privileges: " + emp.privileges);
   }
-
-  printEmployeeInformation() {
-    console.log(this.employees.length);
-    console.log(this.employees);
+  if ("starDate" in emp) {
+    console.log("Start Date:" + emp.starDate);
   }
 }
 
-class ITDepartment extends Department {
-  admins: string[];
-  constructor(id: string, admins: string[]) {
-    super(id, "IT");
-    this.admins = admins;
+// printEmployeeInformation(e1);
+printEmployeeInformation({ name: "Manu", startDate: new Date() });
+
+class Car {
+  drive() {
+    console.log("Driving...");
+  }
+}
+class Truck {
+  drive() {
+    console.log("Driving... a truck");
+  }
+  loadCargo(amount: number) {
+    console.log("Loading cargo..." + amount);
   }
 }
 
-class AccountingDepartment extends Department {
-  private lastReport: string;
+type Vehicle = Car | Truck;
 
-  get mostRecentReport() {
-    if (this.lastReport) {
-      return this.lastReport;
-    }
-    throw new Error("No report found.");
-  }
+const v1 = new Car();
+const v2 = new Truck();
 
-  // setter는 매개변수를 받는다.
-  set mostRecentReport(value: string) {
-    if (!value) {
-      throw new Error("Please pass in a valid value!");
-    }
-    this.addReport(value);
-  }
-
-  constructor(id: string, private reports: string[]) {
-    super(id, "ACCOUNTING");
-    this.lastReport = reports[0];
-  }
-
-  addEmployee(name: string) {
-    if (name === "Max") {
-      return;
-    }
-    this.employees.push(name);
-  }
-
-  addReport(text: string) {
-    this.reports.push(text);
-    this.lastReport = text;
-  }
-
-  printReports() {
-    console.log(this.reports);
+function useVehicle(vehicle: Vehicle) {
+  vehicle.drive();
+  if (vehicle instanceof Truck) {
+    vehicle.loadCargo(1000);
   }
 }
 
-const it = new ITDepartment("d1", ["Max"]);
+useVehicle(v1);
+useVehicle(v2);
 
-it.addEmployee("Max");
-it.addEmployee("Manu");
+interface Bird {
+  type: "bird";
+  flyingSpeed: number;
+}
 
-// it.employees[2] = "Anna"; private를 추가하면 오류가 생긴다
-it.describe();
-it.printEmployeeInformation();
+interface Horse {
+  type: "horse";
+  runningSpeed: number;
+}
+type Animal = Bird | Horse;
 
-console.log(it);
+function moveAnimal(animal: Animal) {
+  let speed;
+  switch (animal.type) {
+    case "bird":
+      speed = animal.flyingSpeed;
+      break;
 
-const accounting = new AccountingDepartment("d2", []);
+    case "horse":
+      speed = animal.runningSpeed;
+  }
+  console.log("Moving at speed : " + speed);
+}
 
-// console.log(accounting.lastReport) getter나 setter 없이는 private 속성이기 때문에 접근이 안됨
+moveAnimal({ type: "bird", flyingSpeed: 10 });
 
-// setter 사용
-accounting.mostRecentReport = "Year and Report";
+const userInputElement = document.getElementById("user-input");
 
-// getter 사용
-accounting.addReport("Something went wrong...");
-console.log(accounting.mostRecentReport);
+// const userInputElement = <HTMLInputElement>(
+//   document.getElementById("user-input")!
+// );
+// const userInputElement = document.getElementById(
+//   "user-input"
+// )! as HTMLInputElement;
 
-accounting.addEmployee("Max");
-accounting.addEmployee("Manu");
+if (userInputElement) {
+  (userInputElement as HTMLInputElement).value = "Hi there!";
+}
 
-accounting.printReports();
-accounting.printEmployeeInformation();
-
-// accountingCopy객체 생성 & describe는 메서드
-
-// const accountingCopy = { name: "zziboo", describe: accounting.describe };
-// accountingCopy.describe();
+// userInputElement.value = "Hi there!";
