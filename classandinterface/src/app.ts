@@ -21,12 +21,34 @@ type Numeric = number | boolean;
 
 type Universal = Combinable & Numeric;
 
+function adds(a: number, b: number): number;
+function adds(a: string, b: string): string;
+function adds(a: number, b: string): string;
+function adds(a: string, b: number): string;
 function adds(a: Combinable, b: Combinable) {
   if (typeof a === "string" || typeof b === "string") {
     return a.toString() + b.toString();
   }
   return a + b;
 }
+
+const result = adds("Zziboo", "Zzirang");
+// result.split("  ");
+
+const fetchedUserData = {
+  id: "u1",
+  name: "zziboo",
+  job: { title: "ceo", description: "my own company" },
+};
+
+// console.log(fetchedUserData.job && fetchedUserData.job.title);
+console.log(fetchedUserData?.job?.title);
+
+const userInput = "";
+
+const storedData = userInput ?? "DEFAULT";
+
+console.log(storedData);
 
 type UnknwonEmployee = Employee | Admin;
 
@@ -114,3 +136,13 @@ if (userInputElement) {
 }
 
 // userInputElement.value = "Hi there!";
+
+interface ErrorContainer {
+  // {email: 'Not a valid email', userName: 'Must start with a character!'}
+  [prop: string]: string;
+}
+
+const errorBag: ErrorContainer = {
+  email: "Not a valid email!",
+  username: "Must start with a capital character!",
+};
